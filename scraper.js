@@ -6,4 +6,8 @@ const request = require("request");
 const fs = require("fs");
 const appTarget = "http://shirts4mike.com/shirts.php";
 const shirtXray = new Xray();
-shirtXray(appTarget);
+const mySelector = ".products > li";
+shirtXray(appTarget,mySelector)(function(err,myData){
+	let myString = JSON.stringify(myData);
+	console.log(myString);
+});
