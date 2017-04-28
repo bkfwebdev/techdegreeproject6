@@ -6,8 +6,10 @@ const request = require("request");
 const fs = require("fs");
 const appTarget = "http://shirts4mike.com/shirts.php";
 const shirtXray = new Xray();
-const mySelector = ".products > li";
-shirtXray(appTarget,mySelector)(function(err,myData){
+const mySelector = ".products@html";
+shirtXray(appTarget,mySelector)
+(function(err,myData){
 	let myString = JSON.stringify(myData);
 	console.log(myString);
+	console.log(typeof(myData));
 });
