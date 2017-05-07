@@ -1,5 +1,6 @@
 // tech degree project 6
-// web scraper powered by node js , x-ray , and fast-csv
+// web scraper powered by node js , x-ray , and json2csv
+
 const Xray = require("x-ray");
 const json2csv = require("json2csv");
 const request = require("request");
@@ -8,8 +9,6 @@ const appTarget = "http://shirts4mike.com/shirts.php";
 const shirtXray = new Xray();
 const mySelector = ".products li";
 const myFields = ["Title", "Price", "ImageURL", "URL", "Time"];
-
-
 
 function timeStamps(){
 let myStamps = [];
@@ -40,7 +39,7 @@ function writeData(scrapeResult) {
 	}
 	let csvData = json2csv({data:scrapeResult,fields:myFields});
 	let myFileName = newStamps[0] + ".csv";
-	fs.writeFile("./data/" + myFileName, csv, function(err) {
+	fs.writeFile("./data/" + myFileName, myFields, function(err) {
   if (err) throw err;
   console.log('file saved');
 });
