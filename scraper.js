@@ -1,14 +1,20 @@
 // tech degree project 6
 // web scraper powered by node js , x-ray , and json2csv
 
-const Xray = require("x-ray");
-const json2csv = require("json2csv");
-const request = require("request");
-const fs = require("fs");
-const appTarget = "http://shirts4mike.com/shirts.php";
-const shirtXray = new Xray();
-const mySelector = ".products li";
-const myFields = ["Title", "Price", "ImageURL", "URL", "Time"];
+var Xray = require("x-ray");
+var json2csv = require('json2csv');
+var request = require('request');
+var fs = require('fs');
+var appTarget = 'http://shirts4mike.com/shirts.php';
+var shirtXray = new Xray();
+var mySelector = '.products li';
+var myFields = ['shirtTitle', 'shirtPrice', 'shirtImage', 'shirtLink', 'theTime'];
+var dataTemplate = [{
+	shirtTitle:'img@alt',
+	shirtPrice:shirtXray('a@href','.price'),
+	shirtImage:'img@src',
+	shirtLink:'a@href'
+}];
 
 function timeStamps(){
 let myStamps = [];
@@ -19,7 +25,8 @@ let myMonth = timeMachine.getMonth();
 let monthString = myMonth.toString();
 let myDay = timeMachine.getDate();
 let dayString = myDay.toString();
-let myHours = timeMachine.getHours() - 12;
+let myHours = timeMachine.getHours();
+if (myHours>12){myHours = myHours - 12; }
 let hoursString = myHours.toString();
 let myMinutes = timeMachine.getMinutes();
 let minutesString = myMinutes.toString();
@@ -30,38 +37,21 @@ myStamps[1] = hoursString + ":" + minutesString + ":" + secondsString;
 
 return myStamps;
 }
-// var dateStampString = (toString(myYear)) + "-" + (toString(myMonth)) + "-" + (toString(myYear));
-// console.log(timeMachine.toString());
-function writeData(scrapeResult) {
-	let newStamps = timeStamps()
-	for (let i=0; i <= 7 ; i++){
-		scrapeResult[i].theTime = newStamps[1]
-	}
-	let csvData = json2csv({data:scrapeResult,fields:myFields});
-	let myFileName = newStamps[0] + ".csv";
-	fs.writeFile("./data/" + myFileName, myFields, function(err) {
-  if (err) throw err;
-  console.log('file saved');
-});
-}
-
 
 try {
-shirtXray(appTarget,mySelector,[{
-	shirtTitle:"img@alt",
-	shirtPrice:shirtXray("a@href",".price"),
-	shirtImage:"img@src",
-	shirtLink:"a@href"
-	
-	
-}])
+shirtXray(appTarget,mySelector,dataTemplate)
 (function(err,myData){
+var newStamps = timeStamps();
+for (let i = 0; i <=7; i++){myData[i].theTime = newStamps[1];}
+var csv= json2csv({data:myData,fields:myFields});
+	var myFileName = newStamps[0] + '.csv';
 	
-	console.log(typeof(myData));
-	console.dir(myData); 
-	console.dir(err);
-	writeData(myData);  
-	
+	fs.writeFile('./data/' + myFileName,csv, function(err) {
+	if (err) throw err;
+	console.log('file saved');
+	console.dir(csv);
+	console.dir(myData);
+});	
 });
 }
  catch (e){
@@ -70,11 +60,6 @@ shirtXray(appTarget,mySelector,[{
 }
 stampTest = timeStamps();
 console.log(stampTest[0],stampTest[1] );
-
-
-
-
-
 
 /*
 
