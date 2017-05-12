@@ -41,8 +41,10 @@ return myStamps;
 
 shirtXray(appTarget,mySelector,dataTemplate)
 (function(err,myData){
-// if(err.code != null && err.code == "ENOENT"){console.log("There’s been a 404 error. Cannot connect to the to http://shirts4mike.com.");}
-// else {
+if (err != null && err.code == "ENOENT"){
+	console.log("There’s been a 404 error. Cannot connect to the to http://shirts4mike.com.");
+	console.dir(err);
+	} else {
 let newStamps = timeStamps();
 for (let i = 0; i <=7; i++){myData[i].Time = newStamps[1];}
 let csv = json2csv({data:myData,fields:myFields});
@@ -53,12 +55,13 @@ let csv = json2csv({data:myData,fields:myFields});
 	console.log('file saved');
 	console.dir(csv);
 	console.dir(myData);
+	
 });	
-// } 
+}
 });
- 
-stampTest = timeStamps();
-console.log(stampTest[0],stampTest[1] );
+
+//stampTest = timeStamps();
+//console.log(stampTest[0],stampTest[1]);
 
 /*
 
