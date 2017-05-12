@@ -1,21 +1,22 @@
 // tech degree project 6
 // web scraper powered by node js , x-ray , and json2csv
-
-var Xray = require("x-ray");
-var json2csv = require('json2csv');
-var request = require('request');
-var fs = require('fs');
-var appTarget = 'http://shirts4mike.com/shirts.php';
-var shirtXray = new Xray();
-var mySelector = '.products li';
-var myFields = ['shirtTitle', 'shirtPrice', 'shirtImage', 'shirtLink', 'theTime'];
-var dataTemplate = [{
-	shirtTitle:'img@alt',
-	shirtPrice:shirtXray('a@href','.price'),
-	shirtImage:'img@src',
-	shirtLink:'a@href'
+// -------------------------------------------------------------------------
+// initialize constants, get npm packages, set up selector for x-ray and data template for data object and csv
+const Xray = require("x-ray");
+const json2csv = require('json2csv');
+const request = require('request');
+const fs = require('fs');
+const appTarget = 'http://shirts4mike.com/shirts.php';
+const shirtXray = new Xray();
+const mySelector = '.products li';
+const myFields = ["Title", "Price", "ImageURL", "URL", "Time"];
+const dataTemplate = [{
+	Title:'img@alt',
+	Price:shirtXray('a@href','.price'),
+	ImageURL:'img@src',
+	URL:'a@href'
 }];
-
+// time stamp function to generate date stamp for file name and time stamp for data entries
 function timeStamps(){
 let myStamps = [];
 let timeMachine = new Date;
@@ -34,17 +35,18 @@ let mySeconds = timeMachine.getSeconds();
 let secondsString = mySeconds.toString();
 myStamps[0] = yearString + "-" + monthString + "-" + dayString;
 myStamps[1] = hoursString + ":" + minutesString + ":" + secondsString; 
-
 return myStamps;
 }
+// main application logic 
 
-try {
 shirtXray(appTarget,mySelector,dataTemplate)
 (function(err,myData){
-var newStamps = timeStamps();
-for (let i = 0; i <=7; i++){myData[i].theTime = newStamps[1];}
-var csv= json2csv({data:myData,fields:myFields});
-	var myFileName = newStamps[0] + '.csv';
+// if(err.code != null && err.code == "ENOENT"){console.log("There’s been a 404 error. Cannot connect to the to http://shirts4mike.com.");}
+// else {
+let newStamps = timeStamps();
+for (let i = 0; i <=7; i++){myData[i].Time = newStamps[1];}
+let csv = json2csv({data:myData,fields:myFields});
+	let myFileName = newStamps[0] + '.csv';
 	
 	fs.writeFile('./data/' + myFileName,csv, function(err) {
 	if (err) throw err;
@@ -52,12 +54,9 @@ var csv= json2csv({data:myData,fields:myFields});
 	console.dir(csv);
 	console.dir(myData);
 });	
+// } 
 });
-}
- catch (e){
-	console.log("no internet connection");
-	console.log(e);
-}
+ 
 stampTest = timeStamps();
 console.log(stampTest[0],stampTest[1] );
 
@@ -97,6 +96,5 @@ To get an "exceeds" rating, you can expand on the project in the following ways:
 2.When an error occurs, log it to a file named scraper-error.log . 
 It should append to the bottom of the file with a time stamp and error e.g. 
 [Tue Feb 16 2016 10:02:12 GMT-0800 (PST)] <error message>
-
 */
 
