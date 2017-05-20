@@ -41,6 +41,7 @@ return myStamps;
 
 shirtXray(appTarget,mySelector,dataTemplate)
 (function(err,myData){
+if (fs.existsSync('./data') === false){fs.mkdir('./data');}
 let newStamps = timeStamps();
 if (err != null && err.code == "ENOENT"){
 	console.log("There’s been a 404 error. Cannot connect to the to http://shirts4mike.com.");
