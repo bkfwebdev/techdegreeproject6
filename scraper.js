@@ -1,6 +1,7 @@
 // tech degree project 6
 // web scraper powered by node js , x-ray , and json2csv
 // -------------------------------------------------------------------------
+
 // initialize constants, get npm packages, set up selector for x-ray and data template for data object and csv
 const Xray = require("x-ray");
 const json2csv = require('json2csv');
@@ -16,36 +17,32 @@ const dataTemplate = [{
 	ImageURL:'img@src',
 	URL:'a@href'
 }];
+
 // time stamp function to generate date stamp for file name and time stamp for data entries
 function timeStamps(){
 let myStamps = [];
 let timeMachine = new Date;
-let myYear = timeMachine.getFullYear();
-let yearString = myYear.toString();
-let myMonth = timeMachine.getMonth();
-let monthString = myMonth.toString();
-let myDay = timeMachine.getDate();
-let dayString = myDay.toString();
+let yearString = timeMachine.getFullYear().toString();
+let monthString = timeMachine.getMonth().toString();
+let dayString = timeMachine.getDate().toString();
 let myHours = timeMachine.getHours();
 if (myHours>12){myHours = myHours - 12; }
 let hoursString = myHours.toString();
-let myMinutes = timeMachine.getMinutes();
-let minutesString = myMinutes.toString();
-let mySeconds = timeMachine.getSeconds();
-let secondsString = mySeconds.toString();
+let minutesString = timeMachine.getMinutes().toString();
+let secondsString = timeMachine.getSeconds().toString();
 myStamps[0] = yearString + "-" + monthString + "-" + dayString;
 myStamps[1] = hoursString + ":" + minutesString + ":" + secondsString; 
 return myStamps;
 }
-// main application logic 
 
+// main application logic 
 shirtXray(appTarget,mySelector,dataTemplate)
 (function(err,myData){
 if (fs.existsSync('./data') === false){fs.mkdir('./data');}
 let newStamps = timeStamps();
-if (err != null && err.code == "ENOENT"){
-	console.log("There’s been a 404 error. Cannot connect to the to http://shirts4mike.com.");
-	console.dir(err);
+if (err){
+	console.log("There’s been a 404 error. Cannot connect to http://shirts4mike.com.");
+	// console.dir(err);
 	fs.appendFile('./data/scraper-error.log', err.code +' '+ newStamps[0] +' '+newStamps[1], encoding='utf8', function (err) {
     if (err) throw err; 
 	}); 
@@ -58,15 +55,12 @@ let csv = json2csv({data:myData,fields:myFields});
 	fs.writeFile('./data/' + myFileName,csv, function(err) {
 	if (err) throw err;
 	console.log('file saved');
-	console.dir(csv);
-	console.dir(myData);
+	//console.dir(csv);
+	//console.dir(myData);
 	
 });	
 }
 });
-
-//stampTest = timeStamps();
-//console.log(stampTest[0],stampTest[1]);
 
 /*
 Instructions/grading points
